@@ -9,6 +9,14 @@ public class FlowDBConnection {
         Class.forName("org.mariadb.jdbc.Driver");
     }
 
+    /**
+     * Connect to the SQL database using supplied credentials
+     * @param hostname address of the database
+     * @param dbName name of the database to connect to
+     * @param dbUser username
+     * @param dbPass password
+     * @return true if the connection was successfully made
+     */
     protected boolean safeConnect(String hostname, String dbName, String dbUser, String dbPass) {
         //construct the URL needed to connect to the database
         System.out.print("\nConnecting to database...");
@@ -30,6 +38,9 @@ public class FlowDBConnection {
         }
     }
 
+    /**
+     * disconnect from the SQL database
+     */
     protected void safeDisconnect(){
         System.out.print("\nDisconnecting from database...");
         try {
@@ -43,26 +54,31 @@ public class FlowDBConnection {
         }
     }
 
-//    protected ResultSet runQuery(String query, Object[] args ) throws SQLException {
-//        PreparedStatement st = connection.prepareStatement(query);
-//        for (int i = 0; i < args.length; i++){
-//            if (args[i] instanceof Integer){
-//                st.setInt(i+1, (Integer)args[i]);
-//            }
-//        }
-//        ResultSet resultSet = st.executeQuery(query);
-//        return resultSet;
-//    }
-
+    /**
+     * returns a PreparedStatement for executing SQL code. if you need to know the primary key of the inserted row, use newStatementWithKey
+     * @param query the query to execute
+     * @return a PreparedStatement object for the given query
+     * @throws SQLException
+     */
     protected PreparedStatement newStatement(String query) throws SQLException {
         PreparedStatement st = connection.prepareStatement(query);
         return st;
     }
 
+    /**
+     * returns a PreparedStatement for executing SQL code, which also stores the generated primary key
+     * @param query the query to execute
+     * @return a PreparedStatement object for the given query
+     * @throws SQLException
+     */
     protected PreparedStatement newStatementWithKey(String query) throws SQLException {
         PreparedStatement st = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         return st;
     }
 
-    protected Connection getConnection(){return connection;}
+    /**
+     * simply returns the underlying SQL connection
+     * @return
+     */
+   // protected Connection getConnection(){return connection;}
 }

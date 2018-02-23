@@ -1,15 +1,20 @@
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class FlowBackend {
     private FlowDBConnection flowdb = null;
-    enum EntityType {USER, CLUB};
-    enum Gender {Male, Female, Other};
+    enum EntityType {USER, CLUB}
+    enum Gender {Male, Female, Other}
 
     public FlowBackend(){
 
     }
 
+    /**
+     * connect to the database using the database wrapper as admin. Please call disconnect() when finished
+     * @return boolean stating if the connection was successful or not
+     */
     protected boolean connect(){
         try {
         flowdb = new FlowDBConnection();
@@ -25,6 +30,9 @@ public class FlowBackend {
         return flowdb.safeConnect(hostname,dbName, dbUser, dbPass);
     }
 
+    /**
+     * disconnect from the underlying database connection wrapper
+     */
     protected void disconnect(){
         flowdb.safeDisconnect();
     }
@@ -45,7 +53,6 @@ public class FlowBackend {
                 p.setString(1, "Club");
             }
             p.executeQuery();
-
             ResultSet rs = p.getGeneratedKeys();
             while (rs.next()){
                 return rs.getInt(1);
@@ -62,11 +69,11 @@ public class FlowBackend {
      * @param lon location longitude
      * @return the LocationID to be used in future references to this location, -1 if failure
      */
-    private int newDBLocation(double lat, double lon){
+    private int newDBLocation(BigDecimal lat, BigDecimal lon){
         try {
             PreparedStatement p = flowdb.newStatementWithKey("INSERT INTO Location (Latitude, Longitude) VALUES (?, ?)");
-            p.setDouble(1, lat);
-            p.setDouble(2, lon);
+            p.setBigDecimal(1, lat);
+            p.setBigDecimal(2, lon);
             p.executeQuery();
 
             ResultSet rs = p.getGeneratedKeys();
@@ -79,14 +86,20 @@ public class FlowBackend {
         return -1;
     }
 
-    protected boolean updateUserLocation(int EntityID, double lat, double lon){
+    /**
+     * update a users location
+     * @param EntityID the entity ID to update
+     * @param lat new latitude
+     * @param lon new longitude
+     * @return true if the update was applied successfully
+     */
+    protected boolean updateUserLocation(int EntityID, BigDecimal lat, BigDecimal lon){
         try {
             PreparedStatement p = flowdb.newStatement("UPDATE Location, FlowUser SET Location.Latitude = ?, Location.Longitude = ? WHERE FlowUser.Location_LocationID = Location.LocationID AND FlowUser.Entity_EntityID = ?");
-            p.setDouble(1, lat);
-            p.setDouble(2, lon);
+            p.setBigDecimal(1, lat);
+            p.setBigDecimal(2, lon);
             p.setInt(3, EntityID);
             p.executeQuery();
-
         } catch (Exception e){
             e.printStackTrace();
             return false;
@@ -94,14 +107,20 @@ public class FlowBackend {
         return true;
     }
 
-    protected boolean updateClubLocation(int EntityID, double lat, double lon){
+    /**
+     * update the location of a club (probably not needed but could come in handy if a location is wrong)
+     * @param EntityID the entity ID of the club to update
+     * @param lat new latitude
+     * @param lon new logitude
+     * @return true if the update was applied successfully
+     */
+    protected boolean updateClubLocation(int EntityID, BigDecimal lat, BigDecimal lon){
         try {
             PreparedStatement p = flowdb.newStatement("UPDATE Location, Club SET Location.Latitude = ?, Location.Longitude = ? WHERE Club.Location_LocationID = Location.LocationID AND Club.Entity_EntityID = ?");
-            p.setDouble(1, lat);
-            p.setDouble(2, lon);
+            p.setBigDecimal(1, lat);
+            p.setBigDecimal(2, lon);
             p.setInt(3, EntityID);
             p.executeQuery();
-
         } catch (Exception e){
             e.printStackTrace();
             return false;
@@ -113,7 +132,7 @@ public class FlowBackend {
      * Authenticates a user by first finding their account using their email, then checks the given password against the password in the database
      * @param email the unique email address of the user
      * @param testPassword the password to check
-     * @return -3 if an SQL error occurs, -2 if the user is not in the database, -1 if password is incorrect, otherwise the EntityID of the user
+     * @return -3 if an SQL error occurs, -2 if the user is not in the database, -1 if password is incorrect, otherwise returns the EntityID of the user
      */
     protected int authenticateUser(String email, String testPassword){
         String salt = null;
@@ -122,46 +141,42 @@ public class FlowBackend {
         try {
             PreparedStatement p = flowdb.newStatement("SELECT Entity_EntityID, _PasswordSalt, _Password FROM FlowUser WHERE Email = ?");
             p.setString(1, email);
-
             ResultSet resultSet = p.executeQuery();
-
             while (resultSet.next()){
                 EntityID = resultSet.getInt("Entity_EntityID");
                 salt = resultSet.getString("_PasswordSalt");
                 actualHash = resultSet.getString("_Password");
             }
-
             if (actualHash == null || salt == null || EntityID == -1){
                 return -2;
             }
-
             String testHash = PasswordSalterAndHasher.hashPassword(salt, testPassword);
-
             if (testHash.equals(actualHash)){
                 return EntityID ;
             } else {
                 return -1;
             }
-
         } catch (Exception e){
             e.printStackTrace();
             return -3;
         }
     }
 
+    /**
+     * change a users password, generating a new unique salt and storing the hash of the salted password
+     * @param EntityID
+     * @param newPassword
+     * @return
+     */
     protected boolean updateUserPassword (int EntityID, String newPassword){
-
         String passSalt = PasswordSalterAndHasher.generateNewSalt();
         String passHash = PasswordSalterAndHasher.hashPassword(passSalt, newPassword);
         try {
             PreparedStatement p = flowdb.newStatement("UPDATE FlowUser SET _PasswordSalt = ?, _Password = ? WHERE Entity_EntityID = ?");
-
             p.setString(1, passSalt);
             p.setString(2, passHash);
             p.setInt(3, EntityID);
-
             p.executeQuery();
-
         } catch (Exception e){
             e.printStackTrace();
             return false;
@@ -169,9 +184,18 @@ public class FlowBackend {
         return true;
     }
 
-    protected boolean newDBUser (String firstName, String lastName, String email, String password, Gender g){
+    /**
+     * create a new user on the database
+     * @param firstName new users first name
+     * @param lastName new users last name
+     * @param email new users email address, must be unique to the database
+     * @param password users password, will be salted and hashed, then stored
+     * @param g gender of the user, may be null if not known
+     * @return EntityID of the added user, -1 on error
+     */
+    protected int newDBUser (String firstName, String lastName, String email, String password, Gender g){
         int EntityID = newDBEntity(EntityType.USER);
-        int LocationID = newDBLocation(0,0);
+        int LocationID = newDBLocation(new BigDecimal(0), new BigDecimal(0));
 
         String passSalt = PasswordSalterAndHasher.generateNewSalt();
         String passHash = PasswordSalterAndHasher.hashPassword(passSalt, password);
@@ -192,14 +216,114 @@ public class FlowBackend {
                 p.setString(8, "O");
             }
             p.setString(9, "Regular");
-
             p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+        return EntityID;
+    }
 
+    /**
+     *
+     * @param name the name of the club
+     * @param description a description of the club
+     * @return EntityID of the added club, -1 on error
+     */
+    protected int newDBClub (String name, String description){
+        int EntityID = newDBEntity(EntityType.CLUB);
+        int LocationID = newDBLocation(new BigDecimal(0), new BigDecimal(0));
 
+        try {
+            PreparedStatement p = flowdb.newStatement("INSERT INTO Club (Entity_EntityID, Location_LocationID, Name, Description) VALUES (?, ?, ?, ?)");
+            p.setInt(1, EntityID);
+            p.setInt(2, LocationID);
+            p.setString(3, name);
+            p.setString(4, description);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+        return EntityID;
+    }
+
+    protected boolean updateClubName(int EntityID, String newName) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE Club SET Name = ? WHERE Entity_EntityID = ?");
+            p.setString(1, newName);
+            p.setInt(2, EntityID);
+            p.executeQuery();
         } catch (Exception e){
             e.printStackTrace();
             return false;
         }
         return true;
     }
+
+    protected boolean updateClubDescription(int EntityID, String newDescription) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE Club SET Description = ? WHERE Entity_EntityID = ?");
+            p.setString(1, newDescription);
+            p.setInt(2, EntityID);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean updateClubSafety(int EntityID, int newSafety) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE Club SET SafetyRating = ? WHERE Entity_EntityID = ?");
+            p.setInt(1, newSafety);
+            p.setInt(2, EntityID);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean updateClubBusyness(int EntityID, int newBusyness) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE Club SET Busyness = ? WHERE Entity_EntityID = ?");
+            p.setInt(1, newBusyness);
+            p.setInt(2, EntityID);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean updateClubUsersPresent(int EntityID, int newPresent) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE Club SET UsersPresent = ? WHERE Entity_EntityID = ?");
+            p.setInt(1, newPresent);
+            p.setInt(2, EntityID);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean updateClubQueueTime(int EntityID, int newTime) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE Club SET QueueTime = ? WHERE Entity_EntityID = ?");
+            p.setInt(1, newTime);
+            p.setInt(2, EntityID);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 }
