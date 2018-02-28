@@ -1,12 +1,18 @@
 package flow.app.home;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,12 +33,26 @@ import java.util.Random;
 
 import flow.app.Club;
 import flow.app.R;
+import flow.app.club.ClubPageActivity;
+import flow.app.home.listeners.SwipeListener;
+import flow.app.listview.ListViewActivity;
 
-public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
 
+    final private float opacity = 0.3f;
+    private EditText mapSearch;
     private GoogleMap googleMap;
     private TileOverlay mOverlay;
+
+    private void closeKeyboard() {
+        //Close the keyboard
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 
     /**
      * Currently loads dummy data
@@ -59,11 +79,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (dummyClubs.get(i).getName().toLowerCase().contains(name.toLowerCase())) {
 
                 //Close the keyboard
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
+                closeKeyboard();
 
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
+                mapSearch.setAlpha(opacity);
 
                 if (googleMap != null) {
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(dummyClubs.get(i).getLocation()[0],
@@ -78,10 +96,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void addHeatMap() {
-        List<LatLng> list = null;
-
         // Get the data: latitude/longitude positions of people.
-        list = readItems(R.raw.heatmap);
+        List<LatLng> list = readItems(R.raw.heatmap);
 
         // Create a heat map tile provider, passing it the latlngs
         if (list != null) {
@@ -94,13 +110,23 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private GestureDetectorCompat mDetector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        final EditText mapSearch = (EditText) findViewById(R.id.mapSearch);
+        mDetector = new GestureDetectorCompat(this, new SwipeListener(this));
+
+        mapSearch = (EditText) findViewById(R.id.mapSearch);
         if (mapSearch != null) {
+            mapSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mapSearch.setAlpha(0.8f);
+                }
+            });
             mapSearch.setOnEditorActionListener(new EditText.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -109,6 +135,18 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                         return true;
                     }
                     return false;
+                }
+            });
+        }
+
+        ImageView listviewChevron = (ImageView) findViewById(R.id.listviewChevron);
+        if (listviewChevron != null) {
+            listviewChevron.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), ListViewActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             });
         }
@@ -152,12 +190,54 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             dummyClubs.get(i).setMarker(marker);
         }
 
+
+        this.googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                mapSearch.setAlpha(opacity);
+                closeKeyboard();
+            }
+        });
+
+        this.googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                mapSearch.setAlpha(opacity);
+                closeKeyboard();
+                return false;
+            }
+        });
+
         //Centre map on bath
         this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(bath));
         this.googleMap.setMaxZoomPreference(20.0f);
         this.googleMap.setMinZoomPreference(15.5f);
 
+        //Link marker info windows to club page.
+        this.googleMap.setOnInfoWindowClickListener(this);
 
         addHeatMap();
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = new Intent(getApplicationContext(), ClubPageActivity.class);
+        intent.putExtra("name", marker.getTitle());
+        intent.putExtra("desc", marker.getSnippet());
+        startActivity(intent);
+    }
+
+    private Club getClub(String name) {
+        for (Club club : dummyClubs) {
+            if (club.getName().equals(name))
+                return club;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        this.mDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 }

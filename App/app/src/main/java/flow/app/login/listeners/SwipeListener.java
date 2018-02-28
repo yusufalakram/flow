@@ -1,21 +1,15 @@
-package flow.app.login.listener;
+package flow.app.login.listeners;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.graphics.Color;
-import android.transition.Fade;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
-import android.widget.EditText;
 import android.widget.GridLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
