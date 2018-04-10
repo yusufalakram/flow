@@ -2,16 +2,22 @@ package flow.app.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,12 +34,15 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import flow.app.Club;
 import flow.app.R;
 import flow.app.club.ClubPageActivity;
+import flow.app.home.adapters.ExpandableListAdapter;
+import flow.app.home.adapters.ExpandedMenuModel;
 import flow.app.home.listeners.SwipeListener;
 import flow.app.listview.ListViewActivity;
 
@@ -44,6 +53,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private EditText mapSearch;
     private GoogleMap googleMap;
     private TileOverlay mOverlay;
+    private DrawerLayout mDrawerLayout;
+    ExpandableListAdapter mMenuAdapter;
+    ExpandableListView expandableList;
+    List<ExpandedMenuModel> listDataHeader;
+    HashMap<ExpandedMenuModel, List<String>> listDataChild;
+
 
     private void closeKeyboard() {
         //Close the keyboard
@@ -117,6 +132,36 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        //TextView textView = (TextView) findViewById(R.id.sidebarTitle);
+        //textView.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_dialog_info, 0, 0, 0);
+
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        expandableList = findViewById(R.id.navigationmenu);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
+
+        prepareListData();
+        mMenuAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild, expandableList);
+
+        // setting list adapter
+        expandableList.setAdapter(mMenuAdapter);
+
+        expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
+                return false;
+            }
+        });
+        expandableList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
+                return false;
+            }
+        });
+
         mDetector = new GestureDetectorCompat(this, new SwipeListener(this));
 
         mapSearch = (EditText) findViewById(R.id.mapSearch);
@@ -167,6 +212,73 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+    }
+
+    private void prepareListData() {
+        listDataHeader = new ArrayList<>();
+        listDataChild = new HashMap<>();
+
+        ExpandedMenuModel item1 = new ExpandedMenuModel();
+        item1.setIconName("Friends");
+        item1.setIconImg(android.R.drawable.ic_menu_mylocation);
+        // Adding data header
+        listDataHeader.add(item1);
+
+        ExpandedMenuModel item2 = new ExpandedMenuModel();
+        item2.setIconName("Nearby Clubs");
+        item2.setIconImg(android.R.drawable.ic_menu_directions);
+        listDataHeader.add(item2);
+
+        ExpandedMenuModel item3 = new ExpandedMenuModel();
+        item3.setIconName("Club Promos");
+        item3.setIconImg(android.R.drawable.ic_menu_zoom);
+        listDataHeader.add(item3);
+
+        ExpandedMenuModel item4 = new ExpandedMenuModel();
+        item4.setIconName("Settings");
+        item4.setIconImg(android.R.drawable.ic_menu_preferences);
+        listDataHeader.add(item4);
+
+        // Adding child data
+        List<String> heading1 = new ArrayList<>();
+        heading1.add("Ben - 0.1 Miles");
+        heading1.add("Liam - 0.1 Miles");
+
+        List<String> heading2 = new ArrayList<>();
+        heading2.add("Second Bridge - 0.2 Miles");
+        heading2.add("Po Na Na - 0.3 Miles");
+
+        listDataChild.put(listDataHeader.get(0), heading1);// Header, Child data
+        listDataChild.put(listDataHeader.get(1), heading2);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        //revision: this don't works, use setOnChildClickListener() and setOnGroupClickListener() above instead
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+                        mDrawerLayout.closeDrawers();
+                        return true;
+                    }
+                });
     }
 
     //Load these from database later
@@ -224,6 +336,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = new Intent(getApplicationContext(), ClubPageActivity.class);
         intent.putExtra("name", marker.getTitle());
         intent.putExtra("desc", marker.getSnippet());
+        intent.putExtra("source", "map");
         startActivity(intent);
     }
 

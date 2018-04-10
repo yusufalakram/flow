@@ -10,6 +10,8 @@ public class Club {
     private String primaryName;
     private double[] location;
     private String description;
+    private int[] photos = new int[]{R.drawable.bridge1, R.drawable.bridge2, R.drawable.bridge3};
+    private int logo = R.drawable.bridge_logo;
 
     //Marker on the map for the club
     private Marker marker;
@@ -48,6 +50,14 @@ public class Club {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int[] getPhotos() {
+        return photos;
+    }
+
+    public int getLogo() {
+        return logo;
     }
 
 }

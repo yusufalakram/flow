@@ -1,47 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Use DrawerLayout as root container for activity -->
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="flow.app.listview.ListViewActivity"
-    android:contextClickable="true"
-    android:background="#66CCFF">
+    android:fitsSystemWindows="true">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/sortButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/sort" />
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/mapButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:background="@drawable/sort" />
-
-    <EditText
+    <!-- Layout to contain contents of main body of screen (drawer will slide over this) -->
+    <FrameLayout
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:imeOptions="actionDone"
-        android:inputType="text"
-        android:id="@+id/editText"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/sortButton"
-        android:layout_toRightOf="@+id/mapButton"
-        android:layout_toEndOf="@+id/mapButton"
-        android:hint="Search..."
-        android:layout_toStartOf="@+id/sortButton"
-        android:textSize="25dp"
-        android:layout_marginLeft="7dp"
-        android:layout_marginRight="5dp" />
-</RelativeLayout>
+        android:layout_height="match_parent" >
+
+        <ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:background="#0099CC">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                tools:context="flow.app.listview.ListViewActivity"
+                android:contextClickable="false"
+                android:background="#66CCFF">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:id="@+id/imageView"
+                    android:background="#0099CC"
+                    android:adjustViewBounds="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sortButton"
+                    android:background="@drawable/sort1"
+                    android:layout_alignBottom="@+id/listviewSearch"
+                    android:layout_alignRight="@+id/imageView"
+                    android:layout_alignEnd="@+id/imageView"
+                    android:layout_marginRight="7dp"
+                    android:layout_marginBottom="2dp" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mapButton"
+                    android:background="@drawable/map"
+                    android:layout_alignTop="@+id/sortButton"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="7dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:id="@+id/listviewSearch"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/sortButton"
+                    android:layout_toRightOf="@+id/mapButton"
+                    android:layout_toEndOf="@+id/mapButton"
+                    android:hint="Search..."
+                    android:layout_toStartOf="@+id/sortButton"
+                    android:textSize="25dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="7dp" />
+
+
+                <RelativeLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_below="@id/listviewSearch"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/clubsListViewList">
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </ScrollView>
+
+        </FrameLayout>
+
+    <!-- Container for contents of drawer - use ScrollView to make configuration easier -->
+    <FrameLayout
+        android:id="@+id/nav_view"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="true"
+        android:background="#FFF">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                tools:context="flow.app.listview.ListViewActivity"
+                android:background="#66CCFF">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="30dp"
+                    android:text="Filter Options"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/filterTitle"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Distance:"
+                    android:layout_below="@id/filterTitle"
+                    android:id="@+id/distanceSliderLabel"/>
+
+                <SeekBar
+                    android:layout_width="150dp"
+                    android:layout_height="6dp"
+                    android:layout_below="@id/distanceSliderLabel"
+                    android:layout_marginTop="5dp"
+                    android:layout_centerHorizontal="true"/>
+
+            </RelativeLayout>
+
+</ScrollView>
+        </FrameLayout>
+
+</android.support.v4.widget.DrawerLayout>
