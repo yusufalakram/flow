@@ -180,13 +180,48 @@
         android:layout_marginRight="7dp"/>
 
 
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Add Friend:"
+    android:textSize="24dp"
+    android:layout_below="@id/profPublicTitle"
+    android:layout_marginTop="15dp"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:id="@+id/newFriendTitle"/>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_menu_add"
+        android:layout_alignTop="@id/newFriendTitle"
+        android:layout_alignLeft="@id/saveVisBtn"
+        android:id="@+id/addFriendBtn"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profPublicTitle"
+        android:hint="joe@bloggs.com"
+        android:id="@+id/addFriendField"
+        android:layout_toLeftOf="@id/addFriendBtn"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="9dp"
+        android:textSize="22dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
+
+
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24dp"
         android:text="Friends: "
-        android:layout_below="@id/profPublicTitle"
+        android:layout_below="@id/newFriendTitle"
         android:layout_marginTop="17dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:id="@+id/friendsTitle"/>
@@ -195,26 +230,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/friendsTitle"
-        android:layout_toRightOf="@id/friendsTitle"
-        android:layout_marginLeft="20dp"
+        android:layout_alignLeft="@id/addFriendField"
         android:text="Ben\nLiam"
         android:textSize="24dp"
-        android:id="@+id/profFriendsList"/>
-
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/friendsTitle"
-        android:hint="Add New Friend"
-        android:id="@+id/addFriendField"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/ic_menu_add"
-        android:layout_below="@id/friendsTitle"
-        android:layout_toRightOf="@id/addFriendField"
-        android:id="@+id/addFriendBtn"/>
+        android:id="@+id/profFriendsList"
+        android:layout_marginRight="10dp"/>
 
 </RelativeLayout>
