@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#0099CC"
+        android:id="@+id/topBarProf" >
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_circ"
+            android:id="@+id/back_circle_prof"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="9dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:text="Yusuf"
+            android:id="@+id/profileTitle"
+            android:layout_toRightOf="@id/back_circle_prof"
+            android:layout_alignParentTop="true"
+            android:paddingLeft="20dp"
+            android:paddingTop="4dp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Name: "
+        android:layout_below="@id/topBarProf"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:id="@+id/profNameTitle"/>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/saveNameBtn"
+        android:layout_alignTop="@id/profNameTitle"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@android:drawable/ic_menu_save" />
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/saveNameBtn"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="3dp"
+        android:layout_below="@id/topBarProf"
+        android:hint="Yusuf Alakram"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:textSize="22dp"
+        android:id="@+id/profName"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Email: "
+        android:layout_below="@id/profNameTitle"
+        android:layout_marginTop="17dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:id="@+id/profEmailTitle"/>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/saveEmailBtn"
+        android:layout_alignTop="@id/profEmailTitle"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@android:drawable/ic_menu_save" />
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/saveEmailBtn"
+        android:layout_marginRight="7dp"
+        android:layout_below="@id/profName"
+        android:hint="ya123@bath.ac.uk"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:textSize="22dp"
+        android:id="@+id/profEmail"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Password: "
+        android:layout_below="@id/profEmailTitle"
+        android:layout_marginTop="17dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:id="@+id/profPassTitle"/>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/savePassBtn"
+        android:layout_alignTop="@id/profPassTitle"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@android:drawable/ic_menu_save" />
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/savePassBtn"
+        android:layout_marginRight="7dp"
+        android:layout_below="@id/profEmail"
+        android:hint="********"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:textSize="22dp"
+        android:id="@+id/profPass"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Auto Check-In: "
+        android:layout_below="@id/profPassTitle"
+        android:layout_marginTop="17dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:id="@+id/profCheckInTitle"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/profCheckInTitle"
+        android:layout_alignRight="@id/profPass" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Profile Visibility: "
+        android:layout_below="@id/profCheckInTitle"
+        android:layout_marginTop="17dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:id="@+id/profPublicTitle"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/saveVisBtn"
+        android:layout_alignTop="@id/profPublicTitle"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@android:drawable/ic_menu_save" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/visibilitySpinner"
+        android:entries="@array/visibility_array"
+        android:layout_alignTop="@id/profPublicTitle"
+        android:layout_toLeftOf="@id/saveVisBtn"
+        android:layout_marginRight="7dp"/>
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Friends: "
+        android:layout_below="@id/profPublicTitle"
+        android:layout_marginTop="17dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:id="@+id/friendsTitle"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/friendsTitle"
+        android:layout_toRightOf="@id/friendsTitle"
+        android:layout_marginLeft="20dp"
+        android:text="Ben\nLiam"
+        android:textSize="24dp"
+        android:id="@+id/profFriendsList"/>
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/friendsTitle"
+        android:hint="Add New Friend"
+        android:id="@+id/addFriendField"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_menu_add"
+        android:layout_below="@id/friendsTitle"
+        android:layout_toRightOf="@id/addFriendField"
+        android:id="@+id/addFriendBtn"/>
+
+</RelativeLayout>

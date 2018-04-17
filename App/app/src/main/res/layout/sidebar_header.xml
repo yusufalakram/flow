@@ -16,6 +16,7 @@
         android:paddingLeft="15dp"
         android:text="Yusuf"
         android:textSize="40dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:id="@+id/sidebarHeader"/>
 
 </LinearLayout>

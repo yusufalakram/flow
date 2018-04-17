@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
@@ -13,17 +14,26 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import flow.app.Club;
@@ -31,18 +41,62 @@ import flow.app.R;
 import flow.app.club.ClubPageActivity;
 import flow.app.home.HomeActivity;
 
-public class ListViewActivity extends FragmentActivity {
+public class ListViewActivity extends AppCompatActivity {
 
+    //TODO: Load clubs from database
     private List<Club> clubsList = new ArrayList<>();
 
-    //TODO: Maybe rework this - decide if String#contains is adequate for searching.
+    private List<Club> displayedList;
+
     private List<Club> searchClubs(String query) {
         List<Club> newList = new ArrayList<>();
-        for (int i = 0; i < clubsList.size(); i++) {
-            if (clubsList.get(i).getName().toLowerCase().contains(query.toLowerCase()))
-                newList.add(clubsList.get(i));
+        for (int i = 0; i < displayedList.size(); i++) {
+            if (displayedList.get(i).getName().toLowerCase().contains(query.toLowerCase()))
+                newList.add(displayedList.get(i));
         }
         return newList;
+    }
+
+    private List<Club> filterClubs(double distance, double queue, double userRating, double flowRating, boolean ticketsReq) {
+        List<Club> tempList = new ArrayList<>(clubsList);
+        for (Iterator<Club> it = tempList.iterator(); it.hasNext();) {
+            Club club = it.next();
+            if (club.getDistance() > distance || club.getQueueTime() > queue
+                    || club.getUserRating() < userRating || club.getFlowRating() < flowRating
+                    || (!ticketsReq && club.areTicketsRequired()))
+                it.remove();
+        }
+        return tempList;
+    }
+
+    private List<Club> sortClubs(final int sortBy, final boolean ascending) {
+        //sortBy: 0 = distance, 1 = queue time, 2 = user rating, 3 = flow rating
+        Collections.sort(displayedList, new Comparator<Club>() {
+            @Override
+            public int compare(Club lhs, Club rhs) {
+                double x;
+                double y;
+                if (sortBy == 0) {
+                    x = lhs.getDistance();
+                    y = rhs.getDistance();
+                } else if (sortBy == 1) {
+                    x = lhs.getQueueTime();
+                    y = rhs.getQueueTime();
+                } else if (sortBy == 2) {
+                    x = lhs.getUserRating();
+                    y = rhs.getUserRating();
+                } else {
+                    x = lhs.getFlowRating();
+                    y = rhs.getFlowRating();
+                }
+                if (ascending) {
+                    // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                    return x > y ? -1 : (x < y) ? 1 : 0;
+                }
+                return x > y ? 1 : (x < y) ? -1 : 0;
+            }
+        });
+        return displayedList;
     }
 
     private void updateView(final List<Club> clubs) {
@@ -168,6 +222,124 @@ public class ListViewActivity extends FragmentActivity {
             });
         }
 
+        final SeekBar distanceSlider = findViewById(R.id.distanceSlider);
+
+        final TextView distanceSliderValue = findViewById(R.id.distanceSliderValue);
+
+        distanceSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                distanceSliderValue.setText("Up to: " + progress + " Mi");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        final TextView queueSliderValue = findViewById(R.id.queueSliderValue);
+
+        final SeekBar queueSlider = findViewById(R.id.queueSlider);
+
+        queueSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                queueSliderValue.setText("Up to: " + progress + " Mins");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        final TextView fratingSliderValue = findViewById(R.id.fratingSliderValue);
+
+        final SeekBar fratingSlider = findViewById(R.id.fratingSlider);
+
+        fratingSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                fratingSliderValue.setText("Min: " + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+
+        final TextView uratingSliderValue = findViewById(R.id.uratingSliderValue);
+
+        final SeekBar uratingSlider = findViewById(R.id.uratingSlider);
+
+        uratingSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                uratingSliderValue.setText("Min: " + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        ImageView queueSortUp = findViewById(R.id.queueSortUp);
+        ImageView queueSortDown = findViewById(R.id.queueSortDown);
+        ImageView distanceSortUp = findViewById(R.id.distanceSortUp);
+        ImageView distanceSortDown = findViewById(R.id.distanceSortDown);
+        ImageView fratingSortUp = findViewById(R.id.fratingSortUp);
+        ImageView fratingSortDown = findViewById(R.id.fratingSortDown);
+        ImageView uratingSortUp = findViewById(R.id.uratingSortUp);
+        ImageView uratingSortDown = findViewById(R.id.uratingSortDown);
+
+        sortIcons = new ImageView[]{queueSortUp, queueSortDown, distanceSortUp, distanceSortDown, fratingSortUp, fratingSortDown,
+                uratingSortUp, uratingSortDown};
+
+        for (int i = 0; i < sortIcons.length; i++) {
+            final int x = i;
+            sortIcons[x].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateSortIcons(sortIcons[x]);
+                }
+            });
+        }
+
+        ImageView closeSidebar = findViewById(R.id.closeSidebar);
+        if (closeSidebar != null) {
+            closeSidebar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                    drawerLayout.closeDrawer(GravityCompat.END);
+                }
+            });
+        }
+
         if (drawerLayout != null) {
             drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
                 @Override
@@ -190,15 +362,7 @@ public class ListViewActivity extends FragmentActivity {
 
                 }
             });
-            drawerLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("Hi", "Jmail");
-                    if (!drawerLayout.isDrawerOpen(drawerLayout)) {
-                        Log.d("Hi", "Heorhe");
-                    }
-                }
-            });
+
         }
 
         ImageButton mapviewButton = findViewById(R.id.mapButton);
@@ -218,13 +382,46 @@ public class ListViewActivity extends FragmentActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    updateView(searchClubs(listViewSearch.getText().toString()));
+                    updateView(displayedList = searchClubs(listViewSearch.getText().toString()));
                     return true;
                 }
                 return false;
             }
         });
 
+        Button applyButton = findViewById(R.id.filterApply);
+        if (applyButton != null) {
+            applyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    displayedList = filterClubs(distanceSlider.getProgress(), queueSlider.getProgress(), 0, fratingSlider.getProgress(), true);
+                    updateView(displayedList = sortClubs(currentlySorted, currentSortMode));
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                    drawerLayout.closeDrawer(GravityCompat.END);
+                }
+            });
+        }
+
+
+        final CheckBox ticketsRequiredCheck = findViewById(R.id.ticketsRequired);
+
+        Button resetButton = findViewById(R.id.filterReset);
+        if (resetButton != null) {
+            resetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    distanceSlider.setProgress(100);
+                    queueSlider.setProgress(100);
+                    fratingSlider.setProgress(0);
+                    uratingSlider.setProgress(0);
+                    ticketsRequiredCheck.setChecked(true);
+                    updateSortIcons(sortIcons[0]);
+                }
+            });
+
+        }
+
+        //TODO: remove this once clubsList is set up properly
         //Dummy creation of clubs to test list view.
         Club bridge = new Club("Bridge", 0,0, "");
         Club po = new Club("Po Na Na", 0,0, "");
@@ -233,5 +430,34 @@ public class ListViewActivity extends FragmentActivity {
 
         updateView(clubsList);
 
+        displayedList = new ArrayList<>(clubsList);
+
+    }
+
+    private ImageView[] sortIcons;
+
+    private int currentlySorted = 0;
+    private boolean currentSortMode = false;
+
+    private void updateSortIcons(ImageView clickedIcon) {
+        for (int i = 0; i < sortIcons.length; i++) {
+            if (i % 2 == 0) {
+                if (sortIcons[i].equals(clickedIcon)) {
+                    currentlySorted = (int) Math.floor(i/2);
+                    sortIcons[i].setImageResource(R.drawable.sort_up);
+                    currentSortMode = true;
+                } else {
+                    sortIcons[i].setImageResource(R.drawable.sort_up1);
+                }
+            } else {
+                if (sortIcons[i].equals(clickedIcon)) {
+                    currentlySorted = (int) Math.floor(i/2);
+                    sortIcons[i].setImageResource(R.drawable.sort_down);
+                    currentSortMode = false;
+                } else {
+                    sortIcons[i].setImageResource(R.drawable.sort_down1);
+                }
+            }
+        }
     }
 }

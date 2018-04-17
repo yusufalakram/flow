@@ -83,10 +83,10 @@ public class SwipeListener extends GestureDetector.SimpleOnGestureListener imple
             logoLayoutParams.addRule(RelativeLayout.ABOVE, R.id.logo_bottom);
             logoReplacement.setLayoutParams(logoLayoutParams);
             //Put the image sliding up back in front.
-            ImageView logoMiddle = (ImageView) source.findViewById(R.id.logo_middle);
+            ImageView logoMiddle = source.findViewById(R.id.logo_middle);
             logoMiddle.bringToFront();
 
-            GridLayout loginForm = (GridLayout) source.findViewById(R.id.loginForm);
+            GridLayout loginForm = source.findViewById(R.id.loginForm);
             loginForm.setVisibility(View.VISIBLE);
         }
 }

@@ -24,9 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
         mDetector = new GestureDetectorCompat(this, new SwipeListener(this));
 
-        final Button loginBtn = (Button) findViewById(R.id.login);
-        final EditText emailField = (EditText) findViewById(R.id.emailEntry);
-        final EditText passwordField = (EditText) findViewById(R.id.passwordEntry);
+        final Button loginBtn = findViewById(R.id.login);
+        final EditText emailField = findViewById(R.id.emailEntry);
+        final EditText passwordField = findViewById(R.id.passwordEntry);
         if (loginBtn != null) {
             loginBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //TODO: do login via backend
     /**
      * Connects to the database and checks if credentials are correct
      * @param email

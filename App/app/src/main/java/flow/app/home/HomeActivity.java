@@ -45,6 +45,7 @@ import flow.app.home.adapters.ExpandableListAdapter;
 import flow.app.home.adapters.ExpandedMenuModel;
 import flow.app.home.listeners.SwipeListener;
 import flow.app.listview.ListViewActivity;
+import flow.app.profile.MyProfileActivity;
 
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
@@ -76,6 +77,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
      * @return list of locations in LatLng format
      */
     private ArrayList<LatLng> readItems(int resource) {
+        //TODO: get real data from database
         ArrayList<LatLng> list = new ArrayList<>();
         Random rand = new Random();
         for (int i = 0; i < dummyClubs.size(); i++) {
@@ -162,9 +164,18 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        TextView sidebarHeader = findViewById(R.id.sidebarHeader);
+        sidebarHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MyProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
         mDetector = new GestureDetectorCompat(this, new SwipeListener(this));
 
-        mapSearch = (EditText) findViewById(R.id.mapSearch);
+        mapSearch = findViewById(R.id.mapSearch);
         if (mapSearch != null) {
             mapSearch.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,7 +195,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
         }
 
-        ImageView listviewChevron = (ImageView) findViewById(R.id.listviewChevron);
+        ImageView listviewChevron = findViewById(R.id.listviewChevron);
         if (listviewChevron != null) {
             listviewChevron.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -196,6 +207,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
         }
 
+        //TODO: Load clubs from backend
         //Load clubs from database
         dummyClubs.add(new Club("Second Bridge", 51.379140, -2.357260, "Queue Time: 30m"));
         dummyClubs.add(new Club("Moles", 51.385047, -2.362571, ""));
@@ -235,15 +247,17 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         listDataHeader.add(item3);
 
         ExpandedMenuModel item4 = new ExpandedMenuModel();
-        item4.setIconName("Settings");
+        item4.setIconName("My Account");
         item4.setIconImg(android.R.drawable.ic_menu_preferences);
         listDataHeader.add(item4);
 
         // Adding child data
+        //TODO: Load friends from database
         List<String> heading1 = new ArrayList<>();
         heading1.add("Ben - 0.1 Miles");
         heading1.add("Liam - 0.1 Miles");
 
+        //TODO: Load near clubs from database
         List<String> heading2 = new ArrayList<>();
         heading2.add("Second Bridge - 0.2 Miles");
         heading2.add("Po Na Na - 0.3 Miles");

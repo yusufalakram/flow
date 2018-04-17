@@ -10,6 +10,7 @@ public class Club {
     private String primaryName;
     private double[] location;
     private String description;
+    private double userRating = 3.2;
     private int[] photos = new int[]{R.drawable.bridge1, R.drawable.bridge2, R.drawable.bridge3};
     private int logo = R.drawable.bridge_logo;
 
@@ -58,6 +59,34 @@ public class Club {
 
     public int getLogo() {
         return logo;
+    }
+
+    public double getUserRating() {
+        return userRating;
+    }
+
+    private double distance = 0.5;
+
+    public double getDistance() {
+        return distance;
+    }
+
+    private double flowRating = 1.2;
+
+    public double getFlowRating() {
+        return flowRating;
+    }
+
+    private double queueTime = 24;
+
+    public double getQueueTime() {
+        return queueTime;
+    }
+
+    private boolean ticketsRequired = false;
+
+    public boolean areTicketsRequired() {
+        return ticketsRequired;
     }
 
 }

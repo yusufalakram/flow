@@ -80,9 +80,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.listheader, null);
         }
-        TextView lblListHeader = (TextView) convertView
+        TextView lblListHeader = convertView
                 .findViewById(R.id.submenu);
-        ImageView headerIcon = (ImageView) convertView.findViewById(R.id.iconimage);
+        ImageView headerIcon = convertView.findViewById(R.id.iconimage);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle.getIconName());
         headerIcon.setImageResource(headerTitle.getIconImg());

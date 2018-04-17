@@ -30,7 +30,8 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".club.ClubPageActivity" />
-        <activity android:name=".listview.ListViewActivity"></activity>
+        <activity android:name=".listview.ListViewActivity" />
+        <activity android:name=".profile.MyProfileActivity" />
     </application>
 
 </manifest>

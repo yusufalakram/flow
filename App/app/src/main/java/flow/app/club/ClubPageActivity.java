@@ -29,6 +29,8 @@ public class ClubPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_club_page);
 
+        //TODO: Lookup club object from club name then display specific club data
+
         Intent intent = getIntent();
         String name;
         final String source = intent.getStringExtra("source");
