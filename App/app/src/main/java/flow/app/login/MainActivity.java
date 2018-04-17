@@ -4,21 +4,14 @@ import android.content.Intent;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import flow.app.R;
 import flow.app.home.HomeActivity;
-import flow.app.login.listener.SwipeListener;
+import flow.app.login.listeners.SwipeListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,9 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
         mDetector = new GestureDetectorCompat(this, new SwipeListener(this));
 
-        final Button loginBtn = (Button) findViewById(R.id.login);
-        final EditText emailField = (EditText) findViewById(R.id.emailEntry);
-        final EditText passwordField = (EditText) findViewById(R.id.passwordEntry);
+        final Button loginBtn = findViewById(R.id.login);
+        final EditText emailField = findViewById(R.id.emailEntry);
+        final EditText passwordField = findViewById(R.id.passwordEntry);
         if (loginBtn != null) {
             loginBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //TODO: do login via backend
     /**
      * Connects to the database and checks if credentials are correct
      * @param email
