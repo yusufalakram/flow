@@ -1,3 +1,4 @@
+package flow.db;
 
 public class GoogleClub {
 

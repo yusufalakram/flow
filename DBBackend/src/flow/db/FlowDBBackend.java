@@ -1,13 +1,18 @@
+package flow.db;
+
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class FlowBackend {
+import flow.app.Club;
+
+
+public class FlowDBBackend {
     private FlowDBConnection flowdb = null;
     enum EntityType {USER, CLUB}
     enum Gender {Male, Female, Other}
 
-    public FlowBackend(){
+    public FlowDBBackend(){
 
     }
 
@@ -85,6 +90,7 @@ public class FlowBackend {
         }
         return -1;
     }
+    
 
     /**
      * update a users location
@@ -247,6 +253,32 @@ public class FlowBackend {
         }
         return EntityID;
     }
+    
+    protected boolean updateUserName(int EntityID, String newName) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE User SET Name = ? WHERE Entity_EntityID = ?");
+            p.setString(1, newName);
+            p.setInt(2, EntityID);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    
+    protected boolean updateUserEmail(int EntityID, String newEmail) {
+        try {
+            PreparedStatement p = flowdb.newStatement("UPDATE User SET Email = ? WHERE Entity_EntityID = ?");
+            p.setString(1, newEmail);
+            p.setInt(2, EntityID);
+            p.executeQuery();
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
     protected boolean updateClubName(int EntityID, String newName) {
         try {
@@ -325,5 +357,139 @@ public class FlowBackend {
         }
         return true;
     }
+    
+    protected int getUsersPresentWithinRadius(BigDecimal lat, BigDecimal lon, BigDecimal latRad, BigDecimal lonRad){
+    	try{
+    		int retVal = 0;
+    		PreparedStatement p = flowdb.newStatement("SELECT Entity_EntityID FROM FlowUser INNER JOIN Location ON FlowUser.Location_LocationID = Location.LocationID "
+    				+ "WHERE (Location.Latitude < ? OR Location.Latitude > ?) AND (Location.Longitude < ? OR Location.Longitude > ?)");
+    		p.setBigDecimal(1, (lat.add(latRad)));
+    		p.setBigDecimal(2, (lat.subtract(latRad)));
+    		p.setBigDecimal(3, (lon.add(lonRad)));
+    		p.setBigDecimal(4, (lon.subtract(lonRad)));
+    		ResultSet resultSet = p.executeQuery();
+    		while(resultSet.next()){
+    			retVal++;
+    		}
+    		return retVal;
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
+    protected Club[] getClubsWithinRadius(BigDecimal lat, BigDecimal lon, BigDecimal latRad, BigDecimal lonRad){
+    	try{
+    		Club[] retVal;
+    		PreparedStatement p = flowdb.newStatement("SELECT Name, Location_LocationID, Description FROM Club INNER JOIN Location ON FlowUser.Location_LocationID = Location.LocationID "
+    				+ "WHERE (Location.Latitude < ? OR Location.Latitude > ?) AND (Location.Longitude < ? OR Location.Longitude > ?)");
+    		p.setBigDecimal(1, (lat.add(latRad)));
+    		p.setBigDecimal(2, (lat.subtract(latRad)));
+    		p.setBigDecimal(3, (lon.add(lonRad)));
+    		p.setBigDecimal(4, (lon.subtract(lonRad)));
+    		PreparedStatement p2 = flowdb.newStatement("SELECT Latitude, Longitude FROM Location WHERE LocationID = ?");
+    		ResultSet resultSet = p.executeQuery();
+    		int resultSetLength = 0;
+    		if (resultSet.last()) {
+    			resultSetLength = resultSet.getRow();
+    		  resultSet.beforeFirst(); 
+    		}
+    		retVal = new Club[resultSetLength];
+    		while(resultSet.next()){
+    			String name = resultSet.getString("Name");
+    			String description = resultSet.getString("Description");
+    			double retLat = 0;
+    			double retLon = 0;
+    			p2.setInt(1, resultSet.getInt("Location_LocationID"));
+    			ResultSet resultSet2 = p2.executeQuery();
+    			while(resultSet2.next()){
+    				retLat = resultSet2.getBigDecimal("Latitude").doubleValue();
+    				retLon = resultSet2.getBigDecimal("Longitude").doubleValue();
+    			}
+    			retVal[resultSet.getRow() - 1] = new Club(name, retLat, retLon, description);
+    		}
+    		return retVal;
+    		
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    protected int getEntityIDOfUser(String email){
+    	try{
+    		int retVal = -1;
+    		PreparedStatement p = flowdb.newStatement("Select Entity_EntityID FROM FlowUser WHERE Email = ?");
+    		p.setString(0, email);
+    		ResultSet resultSet = p.executeQuery();
+    		while(resultSet.next()){
+    			retVal = resultSet.getInt("Entity_EntityID");
+    		}
+    		return retVal;
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
+    protected String getUserNameFromEntityID(int UserEntityID){
+    	try{
+    		String retVal = "";
+    		PreparedStatement p = flowdb.newStatement("Select Name FROM FlowUser WHERE Entity_EntityID = ?");
+    		p.setInt(0, UserEntityID);
+    		ResultSet resultSet = p.executeQuery();
+    		while(resultSet.next()){
+    			retVal = resultSet.getString("Name");
+    		}
+    		return retVal;
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
+    }
+    
+    protected boolean addUserFriend(int UserEntityID, int FriendEntityID){
+    	try{
+    		PreparedStatement p = flowdb.newStatement("INSERT INTO Friend (UserID, FriendID) VALUES(?, ?)");
+    		p.setInt(1, UserEntityID);
+    		p.setInt(2, FriendEntityID);
+    		p.executeUpdate();
+    		return true;
+    	}catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    	
+    }
+    
+    protected String[] getUserFriends(int UserEntityID){
+    	try{
+    		String[] retVal;
+    		PreparedStatement p = flowdb.newStatement("SELECT FriendID FROM Friend WHERE UserID = ?");
+    		p.setInt(1, UserEntityID);
+    		ResultSet resultSet = p.executeQuery();
+    		int resultSetLength = 0;
+    		if (resultSet.last()) {
+    			resultSetLength = resultSet.getRow();
+    		  resultSet.beforeFirst(); 
+    		}
+    		retVal = new String[resultSetLength];
+    		while(resultSet.next()){
+    			retVal[resultSet.getRow() - 1] = getUserNameFromEntityID(resultSet.getInt("FriendID"));
+    		}
+    		return retVal;
+    		
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    
 
 }

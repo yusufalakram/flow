@@ -12,8 +12,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
-import flow.app.R;
+import flow.backend.app.R;
 
 /**
  * Created by Ben Amor on 11/02/2018.

@@ -11,9 +11,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import flow.app.R;
 import flow.app.home.HomeActivity;
+import flow.backend.Backend;
+import flow.backend.app.R;
 
 /**
  * Created by Ben Amor on 12/04/2018.
@@ -62,7 +62,7 @@ public class MyProfileActivity extends AppCompatActivity {
         saveName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Update name in database
+            	Backend.db.updateName(Backend.getUserEntityID(), nameField.getText());
                 nameField.setHint(nameField.getText());
                 userName.setText(nameField.getText().toString().split(" ")[0]);
                 nameField.setText("");
@@ -86,7 +86,7 @@ public class MyProfileActivity extends AppCompatActivity {
         saveEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Update email in database
+            	Backend.db.updateEmail(Backend.getUserEntityID(), emailField.getText());
                 emailField.setHint(emailField.getText());
                 emailField.setText("");
                 emailField.setFocusable(false);
@@ -109,7 +109,7 @@ public class MyProfileActivity extends AppCompatActivity {
         savePass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Update Password in database
+            	Backend.db.updatePassword(Backend.getUserEntityID(), passwordField.getText());
                 passwordField.setHint("********");
                 passwordField.setText("");
                 passwordField.setFocusable(false);
@@ -153,7 +153,7 @@ public class MyProfileActivity extends AppCompatActivity {
         addFriendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Add friend in database
+            	addFriend(Backend.getUserEntityID(), Backend.db.getUserEntityID(addFriendField.getText()));
                 String newFriend = addFriendField.getText().toString().split("@")[0];
                 addFriendField.setHint("joe@bloggs.com");
                 addFriendField.setText("");

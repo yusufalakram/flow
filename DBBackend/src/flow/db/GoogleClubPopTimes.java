@@ -1,3 +1,4 @@
+package flow.db;
 
 public class GoogleClubPopTimes {
 	//day of the week

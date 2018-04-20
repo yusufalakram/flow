@@ -1,9 +1,10 @@
+package flow.db;
 import java.math.BigDecimal;
 
 public class AddClubsInit {
-    FlowBackend fb;
+    FlowDBBackend fb;
     private void run(){
-        fb = new FlowBackend();
+        fb = new FlowDBBackend();
         fb.connect();
 
         int id = 1;//fb.newDBClub("Second Bridge", "a club");

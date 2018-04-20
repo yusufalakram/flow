@@ -8,19 +8,21 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
-import flow.app.R;
 import flow.app.home.HomeActivity;
 import flow.app.login.listeners.SwipeListener;
+import flow.backend.Backend;
+import flow.backend.app.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private GestureDetectorCompat mDetector;
-
+    public Backend be;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        be = new Backend();
 
         mDetector = new GestureDetectorCompat(this, new SwipeListener(this));
 
@@ -50,26 +52,16 @@ public class MainActivity extends AppCompatActivity {
     private boolean attemptLogin(EditText emailField, EditText passwordField) {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
-        emailField.setError(null);
+        String logInMessage = Backend.db.logIn(email, password);
+        emailField.setError(logInMessage);
         passwordField.setError(null);
-        if (!email.contains("@") || !email.contains(".")) {
-            emailField.setError("Invalid email address");
-            return false;
+        if(logInMessage.startsWith("Log")){
+        	Backend.setUserEntityID(Backend.db.getUserEntityID(email));
+        	return true;
         }
-        if (email.length() <= 0) {
-            emailField.setError("Please fill in your email address");
-            return false;
+        else{
+        	return false;
         }
-        if (password.length() <= 0) {
-            passwordField.setError("Please fill in your password");
-            return false;
-        }
-
-        if (!validateCredentials(emailField.getText().toString(), passwordField.getText().toString())) {
-            emailField.setError("Incorrect email or password.");
-            return false;
-        }
-        return true;
     }
 
     //TODO: do login via backend

@@ -34,18 +34,20 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import flow.app.Club;
-import flow.app.R;
 import flow.app.club.ClubPageActivity;
 import flow.app.home.adapters.ExpandableListAdapter;
 import flow.app.home.adapters.ExpandedMenuModel;
 import flow.app.home.listeners.SwipeListener;
 import flow.app.listview.ListViewActivity;
 import flow.app.profile.MyProfileActivity;
+import flow.backend.Backend;
+import flow.backend.app.R;
 
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
@@ -76,24 +78,24 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
      * @param resource json file to use
      * @return list of locations in LatLng format
      */
-    private ArrayList<LatLng> readItems(int resource) {
+    private ArrayList<LatLng> readItems(int resource) {  //No clue what this is supposed to be doing
         //TODO: get real data from database
         ArrayList<LatLng> list = new ArrayList<>();
         Random rand = new Random();
-        for (int i = 0; i < dummyClubs.size(); i++) {
+        for (int i = 0; i < clubList.size(); i++) {
             for (int j = 0; j < 15; j++) {
                 double random1 = rand.nextDouble() / 10000;
                 double random2 = rand.nextDouble() / 10000;
-                list.add(new LatLng(dummyClubs.get(i).getLocation()[0] + random1,
-                        dummyClubs.get(i).getLocation()[1] + random2));
+                list.add(new LatLng(clubList.get(i).getLocation()[0] + random1,
+                        clubList.get(i).getLocation()[1] + random2));
             }
         }
         return list;
     }
 
     private boolean performMapSearch(String name) {
-        for (int i = 0; i < dummyClubs.size(); i++) {
-            if (dummyClubs.get(i).getName().toLowerCase().contains(name.toLowerCase())) {
+        for (int i = 0; i < clubList.size(); i++) {
+            if (clubList.get(i).getName().toLowerCase().contains(name.toLowerCase())) {
 
                 //Close the keyboard
                 closeKeyboard();
@@ -101,11 +103,11 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mapSearch.setAlpha(opacity);
 
                 if (googleMap != null) {
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(dummyClubs.get(i).getLocation()[0],
-                            dummyClubs.get(i).getLocation()[1])));
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(clubList.get(i).getLocation()[0],
+                            clubList.get(i).getLocation()[1])));
                 }
 
-                dummyClubs.get(i).getMarker().showInfoWindow();
+                clubList.get(i).getMarker().showInfoWindow();
                 return true;
             }
         }
@@ -207,16 +209,6 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
         }
 
-        //TODO: Load clubs from backend
-        //Load clubs from database
-        dummyClubs.add(new Club("Second Bridge", 51.379140, -2.357260, "Queue Time: 30m"));
-        dummyClubs.add(new Club("Moles", 51.385047, -2.362571, ""));
-        dummyClubs.add(new Club("The Nest", 51.385508, -2.360320, ""));
-        dummyClubs.add(new Club("Komedia", 51.381648, -2.362141, ""));
-        dummyClubs.add(new Club("Zero Zero", 51.384999, -2.360940, ""));
-        dummyClubs.add(new Club("Po Na Na", 51.380825, -2.356816, ""));
-        dummyClubs.add(new Club("Khoosoosi", 51.383244, -2.356857, ""));
-        dummyClubs.add(new Club("Student Union", 51.379887, -2.326821, ""));
 
         // Get the SupportMapFragment and request notification
         // when the map is ready to be used.
@@ -252,15 +244,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         listDataHeader.add(item4);
 
         // Adding child data
-        //TODO: Load friends from database
-        List<String> heading1 = new ArrayList<>();
-        heading1.add("Ben - 0.1 Miles");
-        heading1.add("Liam - 0.1 Miles");
+        List<String> heading1 = Arrays.asList(Backend.db.getFriends(Backend.getUserEntityID()));
 
-        //TODO: Load near clubs from database
-        List<String> heading2 = new ArrayList<>();
-        heading2.add("Second Bridge - 0.2 Miles");
-        heading2.add("Po Na Na - 0.3 Miles");
+        List<String> heading2 = Arrays.asList(Backend.db.getClubsWithinRadius(Backend.getLocation(), Backend.settings.getPrefRadius()));
 
         listDataChild.put(listDataHeader.get(0), heading1);// Header, Child data
         listDataChild.put(listDataHeader.get(1), heading2);
@@ -296,7 +282,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     //Load these from database later
-    private List<Club> dummyClubs = new ArrayList<>();
+    private List<Club> clubList = Arrays.asList(Backend.db.getClubsWithinRadius(Backend.getLocation(), Backend.settings.getPrefRadius()));
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -306,14 +292,14 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng bath = new LatLng(51.380941, -2.360007);
 
         //Add all clubs to the map
-        for (int i = 0; i < dummyClubs.size(); i++) {
-            LatLng pos = new LatLng(dummyClubs.get(i).getLocation()[0], dummyClubs.get(i).getLocation()[1]);
+        for (int i = 0; i < clubList.size(); i++) {
+            LatLng pos = new LatLng(clubList.get(i).getLocation()[0], clubList.get(i).getLocation()[1]);
             //Investigate using flatten
             Marker marker = this.googleMap.addMarker(new MarkerOptions().position(pos)
-                    .title(dummyClubs.get(i).getName())
+                    .title(clubList.get(i).getName())
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker))
-                    .snippet(dummyClubs.get(i).getDescription()));
-            dummyClubs.get(i).setMarker(marker);
+                    .snippet(clubList.get(i).getDescription()));
+            clubList.get(i).setMarker(marker);
         }
 
 
@@ -355,7 +341,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private Club getClub(String name) {
-        for (Club club : dummyClubs) {
+        for (Club club : clubList) {
             if (club.getName().equals(name))
                 return club;
         }

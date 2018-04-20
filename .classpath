@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="App/app/src/androidTest/java"/>
+	<classpathentry kind="src" path="App/app/src/main/java"/>
+	<classpathentry kind="src" path="App/app/src/test/java"/>
+	<classpathentry kind="src" path="DBBackend/src"/>
+	<classpathentry kind="src" path="backend"/>
+	<classpathentry kind="lib" path="App/gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="lib" path="DBBackend/gson-2.8.2.jar"/>
+	<classpathentry kind="lib" path="DBBackend/mariadb-java-client-1.7.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="DBBackend/out/production/IPDatabase"/>
+</classpath>

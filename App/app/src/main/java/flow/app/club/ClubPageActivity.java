@@ -16,9 +16,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import flow.app.R;
 import flow.app.home.HomeActivity;
 import flow.app.listview.ListViewActivity;
+import flow.backend.app.R;
 
 public class ClubPageActivity extends AppCompatActivity {
 

@@ -31,20 +31,22 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import flow.app.Club;
-import flow.app.R;
 import flow.app.club.ClubPageActivity;
 import flow.app.home.HomeActivity;
+import flow.backend.Backend;
+import flow.backend.app.R;
 
 public class ListViewActivity extends AppCompatActivity {
 
     //TODO: Load clubs from database
-    private List<Club> clubsList = new ArrayList<>();
+    private List<Club> clubsList = Arrays.asList(Backend.db.getClubsWithinRadius(Backend.getLocation(), Backend.settings.getPrefRadius()));
 
     private List<Club> displayedList;
 
@@ -421,12 +423,6 @@ public class ListViewActivity extends AppCompatActivity {
 
         }
 
-        //TODO: remove this once clubsList is set up properly
-        //Dummy creation of clubs to test list view.
-        Club bridge = new Club("Bridge", 0,0, "");
-        Club po = new Club("Po Na Na", 0,0, "");
-        clubsList.add(bridge);
-        clubsList.add(po);
 
         updateView(clubsList);
 

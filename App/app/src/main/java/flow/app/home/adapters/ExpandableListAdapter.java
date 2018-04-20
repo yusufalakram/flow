@@ -14,7 +14,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.List;
 
-import flow.app.R;
+import flow.backend.app.R;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context mContext;
