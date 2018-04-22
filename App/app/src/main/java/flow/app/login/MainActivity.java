@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean validateCredentials(String email, String password) {
         //Need to contact database to verify credentials.
-        String[][] sampleCredentials = {{"a@a.com", "password"}};
+        String[][] sampleCredentials = {{"ya123@bath.ac.uk", "password"}};
         for (String[] credentials : sampleCredentials) {
             if (email.equals(credentials[0]) && password.equals(credentials[1])) {
                 return true;

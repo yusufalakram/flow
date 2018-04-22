@@ -1,12 +1,15 @@
 package flow.app.home;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -81,12 +84,31 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         ArrayList<LatLng> list = new ArrayList<>();
         Random rand = new Random();
         for (int i = 0; i < dummyClubs.size(); i++) {
-            for (int j = 0; j < 15; j++) {
-                double random1 = rand.nextDouble() / 10000;
-                double random2 = rand.nextDouble() / 10000;
+            int z = 15;
+            if (dummyClubs.get(i).getName().equals("Khoosoosi"))
+                z = 1;
+            if (dummyClubs.get(i).getName().equals("Second Bridge"))
+                z = 35;
+            if (dummyClubs.get(i).getName().equals("Moles"))
+                z = 2;
+            if (dummyClubs.get(i).getName().equals("The Nest"))
+                z = 7;
+            if (dummyClubs.get(i).getName().equals("Komedia"))
+                z = 12;
+            if (dummyClubs.get(i).getName().equals("Zero Zero"))
+                z = 4;
+            if (dummyClubs.get(i).getName().equals("Po Na Na"))
+                z = 1;
+            if (dummyClubs.get(i).getName().equals("Student Union"))
+                z = 8;
+            for (int j = 0; j < z; j++) {
+                double random1 = rand.nextDouble() / 7000;
+                double random2 = rand.nextDouble() / 7000;
                 list.add(new LatLng(dummyClubs.get(i).getLocation()[0] + random1,
                         dummyClubs.get(i).getLocation()[1] + random2));
             }
+            list.add(new LatLng(51.379053, -2.357186));
+            list.add(new LatLng(51.379030, -2.357141));
         }
         return list;
     }
@@ -209,14 +231,14 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //TODO: Load clubs from backend
         //Load clubs from database
-        dummyClubs.add(new Club("Second Bridge", 51.379140, -2.357260, "Queue Time: 30m"));
-        dummyClubs.add(new Club("Moles", 51.385047, -2.362571, ""));
-        dummyClubs.add(new Club("The Nest", 51.385508, -2.360320, ""));
-        dummyClubs.add(new Club("Komedia", 51.381648, -2.362141, ""));
-        dummyClubs.add(new Club("Zero Zero", 51.384999, -2.360940, ""));
-        dummyClubs.add(new Club("Po Na Na", 51.380825, -2.356816, ""));
-        dummyClubs.add(new Club("Khoosoosi", 51.383244, -2.356857, ""));
-        dummyClubs.add(new Club("Student Union", 51.379887, -2.326821, ""));
+        dummyClubs.add(new Club("Second Bridge", 51.378960, -2.357198, R.drawable.bridge_logo, 40, 0.1));
+        dummyClubs.add(new Club("Moles", 51.385047, -2.362571, R.drawable.moles, 5, 0.5));
+        dummyClubs.add(new Club("The Nest", 51.385508, -2.360320, R.drawable.nest, 15, 0.55));
+        dummyClubs.add(new Club("Komedia", 51.381648, -2.362141, R.drawable.komedia, 25, 0.3));
+        dummyClubs.add(new Club("Zero Zero", 51.384999, -2.360940, R.drawable.zerozero, 5, 0.4));
+        dummyClubs.add(new Club("Po Na Na", 51.380825, -2.356816,R.drawable.po_logo, 3, 0.18));
+        dummyClubs.add(new Club("Khoosoosi", 51.383244, -2.356857, R.drawable.khosoosi, 0, 0.5));
+        dummyClubs.add(new Club("Student Union", 51.379887, -2.326821, R.drawable.su, 15, 1.3));
 
         // Get the SupportMapFragment and request notification
         // when the map is ready to be used.
@@ -246,21 +268,16 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         item3.setIconImg(android.R.drawable.ic_menu_zoom);
         listDataHeader.add(item3);
 
-        ExpandedMenuModel item4 = new ExpandedMenuModel();
-        item4.setIconName("My Account");
-        item4.setIconImg(android.R.drawable.ic_menu_preferences);
-        listDataHeader.add(item4);
-
         // Adding child data
         //TODO: Load friends from database
         List<String> heading1 = new ArrayList<>();
-        heading1.add("Ben - 0.1 Miles");
-        heading1.add("Liam - 0.1 Miles");
+        heading1.add("Ben - 0.1 Miles (Bridge)");
+        heading1.add("Liam - 0.1 Miles (Bridge)");
 
         //TODO: Load near clubs from database
         List<String> heading2 = new ArrayList<>();
-        heading2.add("Second Bridge - 0.2 Miles");
-        heading2.add("Po Na Na - 0.3 Miles");
+        heading2.add("Second Bridge - 0.1 Miles");
+        heading2.add("Po Na Na - 0.18 Miles");
 
         listDataChild.put(listDataHeader.get(0), heading1);// Header, Child data
         listDataChild.put(listDataHeader.get(1), heading2);
@@ -299,17 +316,53 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<Club> dummyClubs = new ArrayList<>();
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 10001) {
+            if (permissions.length == 1 &&
+                    permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    googleMap.setMyLocationEnabled(true);
+                }
+            }
+        }
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
 
         this.googleMap = googleMap;
 
         LatLng bath = new LatLng(51.380941, -2.360007);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        } else {
+            // Show rationale and request permission.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    10001);
+
+        }
+
+        LatLng pos = new LatLng(51.379053, -2.357186);
+        this.googleMap.addMarker(new MarkerOptions().position(pos)
+                .title("Ben")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend_icon)));
+
+        LatLng pos2 = new LatLng(51.379030, -2.357141);
+        this.googleMap.addMarker(new MarkerOptions().position(pos2)
+                .title("Liam")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend_icon)));
+
+
         //Add all clubs to the map
         for (int i = 0; i < dummyClubs.size(); i++) {
-            LatLng pos = new LatLng(dummyClubs.get(i).getLocation()[0], dummyClubs.get(i).getLocation()[1]);
+            LatLng posi = new LatLng(dummyClubs.get(i).getLocation()[0], dummyClubs.get(i).getLocation()[1]);
             //Investigate using flatten
-            Marker marker = this.googleMap.addMarker(new MarkerOptions().position(pos)
+            Marker marker = this.googleMap.addMarker(new MarkerOptions().position(posi)
                     .title(dummyClubs.get(i).getName())
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker))
                     .snippet(dummyClubs.get(i).getDescription()));

@@ -148,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/distanceSliderValue"
                     android:layout_toRightOf="@id/distanceSlider"
-                    android:text="Up to: 100 Mi"
+                    android:text="Up to: 10 Mi"
                     android:layout_alignTop="@id/distanceSliderLabel"/>
 
                 <TextView

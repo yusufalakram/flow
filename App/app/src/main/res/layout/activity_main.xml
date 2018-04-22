@@ -30,7 +30,7 @@
         android:id="@+id/logo_middle"
         android:layout_below="@+id/logo_top"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/logo1" />
+        android:background="@drawable/logo2" />
 
     <GridLayout
         android:layout_width="wrap_content"

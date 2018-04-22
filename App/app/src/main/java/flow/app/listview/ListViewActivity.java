@@ -44,7 +44,6 @@ import flow.app.home.HomeActivity;
 public class ListViewActivity extends AppCompatActivity {
 
     //TODO: Load clubs from database
-    private List<Club> clubsList = new ArrayList<>();
 
     private List<Club> displayedList;
 
@@ -58,7 +57,8 @@ public class ListViewActivity extends AppCompatActivity {
     }
 
     private List<Club> filterClubs(double distance, double queue, double userRating, double flowRating, boolean ticketsReq) {
-        List<Club> tempList = new ArrayList<>(clubsList);
+        List<Club> tempList = new ArrayList<>(Club.getClubs());
+        System.out.println(Club.getClubs().size());
         for (Iterator<Club> it = tempList.iterator(); it.hasNext();) {
             Club club = it.next();
             if (club.getDistance() > distance || club.getQueueTime() > queue
@@ -77,11 +77,11 @@ public class ListViewActivity extends AppCompatActivity {
                 double x;
                 double y;
                 if (sortBy == 0) {
-                    x = lhs.getDistance();
-                    y = rhs.getDistance();
-                } else if (sortBy == 1) {
                     x = lhs.getQueueTime();
                     y = rhs.getQueueTime();
+                } else if (sortBy == 1) {
+                    x = lhs.getDistance();
+                    y = rhs.getDistance();
                 } else if (sortBy == 2) {
                     x = lhs.getUserRating();
                     y = rhs.getUserRating();
@@ -138,7 +138,7 @@ public class ListViewActivity extends AppCompatActivity {
             layoutParams2.setMargins(0, 0, 10, 0);
 
             //TODO: Get distance to club
-            clubDistance.setText("Distance: 0.5 Mi");
+            clubDistance.setText("Distance: "+ clubs.get(i).getDistance() +" Mi");
             clubDistance.setLayoutParams(layoutParams2);
 
             listElement.addView(clubDistance);
@@ -174,7 +174,7 @@ public class ListViewActivity extends AppCompatActivity {
             layoutParams5.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             layoutParams5.addRule(RelativeLayout.ABOVE, separator.getId());
             //TODO: Get Queue Time
-            clubQueue.setText("Queue Time: 20m");
+            clubQueue.setText("Queue Time: "+clubs.get(i).getQueueTime()+"m");
             clubQueue.setLayoutParams(layoutParams5);
 
 
@@ -229,7 +229,7 @@ public class ListViewActivity extends AppCompatActivity {
         distanceSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                distanceSliderValue.setText("Up to: " + progress + " Mi");
+                distanceSliderValue.setText("Up to: " + (float) progress / 10 + " Mi");
             }
 
             @Override
@@ -394,7 +394,7 @@ public class ListViewActivity extends AppCompatActivity {
             applyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    displayedList = filterClubs(distanceSlider.getProgress(), queueSlider.getProgress(), 0, fratingSlider.getProgress(), true);
+                    displayedList = filterClubs((float) distanceSlider.getProgress() / 10, queueSlider.getProgress(), 0, fratingSlider.getProgress(), true);
                     updateView(displayedList = sortClubs(currentlySorted, currentSortMode));
                     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                     drawerLayout.closeDrawer(GravityCompat.END);
@@ -422,15 +422,10 @@ public class ListViewActivity extends AppCompatActivity {
         }
 
         //TODO: remove this once clubsList is set up properly
-        //Dummy creation of clubs to test list view.
-        Club bridge = new Club("Bridge", 0,0, "");
-        Club po = new Club("Po Na Na", 0,0, "");
-        clubsList.add(bridge);
-        clubsList.add(po);
 
-        updateView(clubsList);
+        updateView(Club.getClubs());
 
-        displayedList = new ArrayList<>(clubsList);
+        displayedList = new ArrayList<>(Club.getClubs());
 
     }
 

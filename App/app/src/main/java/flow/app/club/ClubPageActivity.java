@@ -13,9 +13,13 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import flow.app.Club;
 import flow.app.R;
 import flow.app.home.HomeActivity;
 import flow.app.listview.ListViewActivity;
@@ -33,15 +37,24 @@ public class ClubPageActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String name;
+        Club club;
         final String source = intent.getStringExtra("source");
         if ((name = intent.getStringExtra("name")).length() <= 0) {
             //Launch list of clubs activity
         } else {
             //String desc = intent.getStringExtra("desc");
             //Display club page with name and description etc.
+            club = Club.getClub(name);
             TextView clubTitle = findViewById(R.id.clubTitle);
             if (clubTitle != null)
-                clubTitle.setText(name);
+                clubTitle.setText(club.getName());
+            TextView clubDistance = findViewById(R.id.clubDistance);
+            clubDistance.setText(club.getDistance() + " Miles");
+            TextView clubQueue = findViewById(R.id.clubQueueTime);
+            clubQueue.setText(club.getQueueTime() + " Minutes");
+            TextView flowRating = findViewById(R.id.clubFlowRating);
+            //TODO: Make actual flow rating
+            flowRating.setText(String.format("%.2g%n", Math.random()*club.getQueueTime()));
         }
 
         ImageButton backButton = findViewById(R.id.back_circle);
