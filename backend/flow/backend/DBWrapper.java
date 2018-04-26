@@ -63,4 +63,13 @@ public class DBWrapper extends FlowDBBackend{
 	public String[] getFriends(int EntityID){
 		return getUserFriends(EntityID);
 	}
+
+	public String[] getUserSettings(int EntityID) {
+		return getUserPreferences(EntityID).split("\\|");
+	}
+	
+	public void saveUserSettings(int EntityID, String[] newPreferences){
+		saveUserPreferences(EntityID, String.join("\\|", newPreferences));
+		
+	}
 }

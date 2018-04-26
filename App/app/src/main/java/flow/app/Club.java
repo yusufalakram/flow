@@ -2,6 +2,8 @@ package flow.app;
 
 import com.google.android.gms.maps.model.Marker;
 
+import flow.backend.FlowScore;
+
 /**
  * Created by Ben Amor on 21/02/2018.
  */
@@ -13,6 +15,7 @@ public class Club {
     private double userRating = 3.2;
     private int[] photos = new int[]{R.drawable.bridge1, R.drawable.bridge2, R.drawable.bridge3};
     private int logo = R.drawable.bridge_logo;
+    private FlowScore flowScore;
 
     //Marker on the map for the club
     private Marker marker;
@@ -87,6 +90,10 @@ public class Club {
 
     public boolean areTicketsRequired() {
         return ticketsRequired;
+    }
+    
+    public void update(){//rate of entry plus new flow score
+    	this.flowScore = 
     }
 
 }

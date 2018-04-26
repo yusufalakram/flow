@@ -16,13 +16,12 @@ import flow.backend.app.R;
 public class MainActivity extends AppCompatActivity {
 
     private GestureDetectorCompat mDetector;
-    public Backend be;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        be = new Backend();
+        Backend.Init();
 
         mDetector = new GestureDetectorCompat(this, new SwipeListener(this));
 
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         passwordField.setError(null);
         if(logInMessage.startsWith("Log")){
         	Backend.setUserEntityID(Backend.db.getUserEntityID(email));
+        	Backend.se = new flow.backend.Settings(Backend.db.getUserEntityID(email));
         	return true;
         }
         else{

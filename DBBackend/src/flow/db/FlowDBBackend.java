@@ -490,6 +490,38 @@ public class FlowDBBackend {
         }
     }
     
+    protected String getUserPreferences(int UserEntityID){
+    	try{
+    		String retVal = null;
+    		PreparedStatement p = flowdb.newStatement("SELECT Preferences FROM FlowUser WHERE Entity_EntityID = ?");
+    		p.setInt(1, UserEntityID);
+    		ResultSet resultSet = p.executeQuery();
+    		while(resultSet.next()){
+    			retVal = resultSet.getString("Preferences");
+    		}
+    		return retVal;
+    		
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    protected boolean saveUserPreferences(int UserEntityID, String newPreferences){
+    	try{
+    		PreparedStatement p = flowdb.newStatement("UPDATE FlowUser SET Preferences = ? WHERE Entity_EntityID = ?");
+    		p.setString(1, newPreferences);
+    		p.setInt(2, UserEntityID);
+    		p.executeQuery();
+    		return true;
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     
 
 }
