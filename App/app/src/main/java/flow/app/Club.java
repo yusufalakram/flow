@@ -77,10 +77,9 @@ public class Club {
         return distance;
     }
 
-    private double flowRating = 1.2;
 
     public double getFlowRating() {
-        return flowRating;
+        return this.flowScore.getFlow();
     }
 
     private double queueTime = 24;
@@ -101,6 +100,11 @@ public class Club {
     	}
     	this.q.update();
     	this.queueTime = this.q.getQueueTime();
+    	
+    	if(this.flowScore == null){
+    		this.flowScore = new FlowScore(this);
+    	}
+    	this.flowScore.update();
     }
     
     public int getEntityID(){
