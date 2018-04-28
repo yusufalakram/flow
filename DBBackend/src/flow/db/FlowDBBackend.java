@@ -379,6 +379,34 @@ public class FlowDBBackend {
         }
     }
     
+    protected int[] getUsersWithinRadius(BigDecimal lat, BigDecimal lon, BigDecimal latRad, BigDecimal lonRad){
+    	try{
+    		int[] retVal;
+    		PreparedStatement p = flowdb.newStatement("SELECT Entity_EntityID, Location_LocationID FROM FlowUser INNER JOIN Location ON FlowUser.Location_LocationID = Location.LocationID "
+    				+ "WHERE (Location.Latitude < ? OR Location.Latitude > ?) AND (Location.Longitude < ? OR Location.Longitude > ?)");
+    		p.setBigDecimal(1, (lat.add(latRad)));
+    		p.setBigDecimal(2, (lat.subtract(latRad)));
+    		p.setBigDecimal(3, (lon.add(lonRad)));
+    		p.setBigDecimal(4, (lon.subtract(lonRad)));
+    		ResultSet resultSet = p.executeQuery();
+    		int resultSetLength = 0;
+    		if (resultSet.last()) {
+    			resultSetLength = resultSet.getRow();
+    		  resultSet.beforeFirst(); 
+    		}
+    		retVal = new int[resultSetLength];
+    		while(resultSet.next()){
+    			retVal[resultSet.getRow() - 1] = resultSet.getInt("Entity_EntityID");
+    		}
+    		return retVal;
+    		
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     protected Club[] getClubsWithinRadius(BigDecimal lat, BigDecimal lon, BigDecimal latRad, BigDecimal lonRad){
     	try{
     		Club[] retVal;
@@ -423,6 +451,23 @@ public class FlowDBBackend {
     		int retVal = -1;
     		PreparedStatement p = flowdb.newStatement("Select Entity_EntityID FROM FlowUser WHERE Email = ?");
     		p.setString(0, email);
+    		ResultSet resultSet = p.executeQuery();
+    		while(resultSet.next()){
+    			retVal = resultSet.getInt("Entity_EntityID");
+    		}
+    		return retVal;
+    	}
+    	catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
+    protected int getEntityIDOfClub(String name){
+    	try{
+    		int retVal = -1;
+    		PreparedStatement p = flowdb.newStatement("Select Entity_EntityID FROM Clubs WHERE Name = ?");
+    		p.setString(0, name);
     		ResultSet resultSet = p.executeQuery();
     		while(resultSet.next()){
     			retVal = resultSet.getInt("Entity_EntityID");

@@ -82,6 +82,7 @@ public class Backend{
 				update();
 				try {
 					this.wait(UPDATE_TIMER);
+					update();
 				} catch (InterruptedException e) {
 					System.out.println("Update thread was interrupted");
 					e.printStackTrace();

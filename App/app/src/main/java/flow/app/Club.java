@@ -2,7 +2,9 @@ package flow.app;
 
 import com.google.android.gms.maps.model.Marker;
 
+import flow.backend.Backend;
 import flow.backend.FlowScore;
+import flow.backend.QueueTime;
 
 /**
  * Created by Ben Amor on 21/02/2018.
@@ -16,6 +18,7 @@ public class Club {
     private int[] photos = new int[]{R.drawable.bridge1, R.drawable.bridge2, R.drawable.bridge3};
     private int logo = R.drawable.bridge_logo;
     private FlowScore flowScore;
+    private QueueTime q;
 
     //Marker on the map for the club
     private Marker marker;
@@ -93,7 +96,15 @@ public class Club {
     }
     
     public void update(){//rate of entry plus new flow score
-    	this.flowScore = 
+    	if(this.q == null){
+    		this.q = new QueueTime(this);
+    	}
+    	this.q.update();
+    	this.queueTime = this.q.getQueueTime();
+    }
+    
+    public int getEntityID(){
+    	return Backend.db.getIDOfClub(this.primaryName);
     }
 
 }

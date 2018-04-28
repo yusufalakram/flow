@@ -44,6 +44,13 @@ public class DBWrapper extends FlowDBBackend{
 		return getClubsWithinRadius(latitude, longitude, radiusDeg[0], radiusDeg[1]);
 	}
 	
+	public int[] getUsersWithinRadius(double[] location, double radius){
+		BigDecimal latitude = new BigDecimal(location[0]);
+		BigDecimal longitude = new BigDecimal(location[1]);
+		BigDecimal[] radiusDeg = LocationTranslation.radiusToLocation(latitude, radius);
+		return getUsersWithinRadius(latitude, longitude, radiusDeg[0], radiusDeg[1]);
+	}
+	
 	public boolean updateName(int EntityID, String name){
 		return updateUserName(EntityID, name);
 	}
@@ -72,4 +79,9 @@ public class DBWrapper extends FlowDBBackend{
 		saveUserPreferences(EntityID, String.join("\\|", newPreferences));
 		
 	}
+	
+	public int getIDOfClub(String name){
+		return getEntityIDOfClub(name);
+	}
+	
 }
