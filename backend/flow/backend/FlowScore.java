@@ -1,10 +1,10 @@
 package flow.backend;
 
 import flow.app.Club;
-import flow.db.FlowBackend;
+import flow.db.FlowDBBackend;
 
 public class FlowScore {
-	private static final int CLUB_RADIUS;
+	private final static double CLUB_RADIUS = 0.05;
 	private double flowScore;
 	private String primaryName;
 	private double[] location;
@@ -19,6 +19,8 @@ public class FlowScore {
 	private void calculateFlowScore(){
 		
 		int usersPresent = Backend.db.getUserCountWithinRadius(location, Backend.se.getPrefRadius());
+		int[] usersNearClub = Backend.db.getUsersWithinRadius(location, CLUB_RADIUS);
+		this.flowScore = usersNearClub.length / usersPresent;
 	}
 
 	public double getFlow() {
